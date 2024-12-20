@@ -11,7 +11,7 @@ class SQLiteHelper {
     return openDatabase(
       join(dbPath, _databaseName),
       onCreate: (db, version) async {
-        await db.execute('''
+        await db.execute(''' 
           CREATE TABLE $_userTable (
             userCode TEXT PRIMARY KEY,
             displayName TEXT,
@@ -25,14 +25,19 @@ class SQLiteHelper {
     );
   }
 
+  // Modify the saveUser method to replace the existing record if the userCode already exists
   static Future<void> saveUser(UserModel user) async {
     final db = await _initializeDb();
-    await db.insert(_userTable, {
-      'userCode': user.userCode,
-      'displayName': user.displayName,
-      'email': user.email,
-      'employeeCode': user.employeeCode,
-      'companyCode': user.companyCode,
-    });
+    await db.insert(
+      _userTable,
+      {
+        'userCode': user.userCode,
+        'displayName': user.displayName,
+        'email': user.email,
+        'employeeCode': user.employeeCode,
+        'companyCode': user.companyCode,
+      },
+      conflictAlgorithm: ConflictAlgorithm.replace, // Replace the existing record if userCode exists
+    );
   }
 }
